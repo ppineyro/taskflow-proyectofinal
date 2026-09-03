@@ -1,36 +1,29 @@
-import { useEffect, useState } from 'react'
+import CssBaseline from '@mui/material/CssBaseline'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
+import { ProtectedRoute } from './ProtectedRoute'
+import { DashboardPage } from './pages/DashboardPage'
+import { LoginPage } from './pages/LoginPage'
 
-interface ServerInfo {
-  version: string;
-  app: string;
-}
+const theme = createTheme()
+const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, '')
 
-function App() {
-  const [serverInfo, setServerInfo] = useState<ServerInfo | null>(null);
-
-  useEffect(() => {
-    async function fetchServerInfo() {
-      const response = await fetch("https://d3ujwk09smrk9z.cloudfront.net/info");
-      const data = await response.json();
-
-      setServerInfo(data);
-    }
-
-    fetchServerInfo();
-  }, []);
-
+export default function App() {
   return (
-    <div style={{ padding: 24 }}>
-      <h1>Server Info</h1>
-
-      {serverInfo && (
-        <div>
-          <p>App: {serverInfo.app}</p>
-          <p>Version: {serverInfo.version}</p>
-        </div>
-      )}
-    </div>
-  );
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AuthProvider>
+        <BrowserRouter basename={routerBasename}>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<DashboardPage />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
+  )
 }
-
-export default App
