@@ -9,10 +9,25 @@ interface Props {
 }
 
 export function TaskCardDetail({ task, onStatusChange, onDelete }: Props) {
-  const renderStatus = (status: string) => {
-    if (status === 'DONE' || status === 'COMPLETADA') return <Chip label="Completada" color="success" size="small" />;
-    if (status === 'IN_PROGRESS' || status === 'EN_PROGRESO') return <Chip label="En progreso" color="warning" size="small" />;
+  const getNormalizedStatus = (status?: string) => {
+    const s = String(status || '').toUpperCase();
+    if (s === 'IN_PROGRESS' || s === 'EN_PROGRESO') return 'IN_PROGRESS';
+    if (s === 'DONE' || s === 'COMPLETADA') return 'DONE';
+    return 'TODO';
+  };
+
+  const renderStatus = (status?: string) => {
+    const normalized = getNormalizedStatus(status);
+    if (normalized === 'DONE') return <Chip label="Completada" color="success" size="small" />;
+    if (normalized === 'IN_PROGRESS') return <Chip label="En progreso" color="warning" size="small" />;
     return <Chip label="Por hacer" color="default" size="small" />;
+  };
+
+  const renderPriority = (priority?: string) => {
+    const p = String(priority || '').toUpperCase();
+    if (p === 'HIGH' || p === 'ALTA') return <Chip label="Alta" color="error" size="small" variant="outlined" />;
+    if (p === 'MED' || p === 'MEDIUM' || p === 'MEDIA') return <Chip label="Media" color="warning" size="small" variant="outlined" />;
+    return <Chip label="Baja" color="info" size="small" variant="outlined" />;
   };
 
   return (
@@ -23,6 +38,7 @@ export function TaskCardDetail({ task, onStatusChange, onDelete }: Props) {
             {task.title}
           </Typography>
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            {renderPriority(task.priority)}
             {renderStatus(task.status)}
             {onDelete && (
               <IconButton size="small" color="error" onClick={() => onDelete(task.id)}>
@@ -48,7 +64,7 @@ export function TaskCardDetail({ task, onStatusChange, onDelete }: Props) {
           {onStatusChange && (
             <FormControl size="small" sx={{ minWidth: 140 }}>
               <Select
-                value={task.status}
+                value={getNormalizedStatus(task.status)}
                 onChange={(e) => onStatusChange(task.id, e.target.value)}
                 sx={{ height: 30, fontSize: '0.8rem' }}
               >

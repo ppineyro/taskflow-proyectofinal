@@ -33,7 +33,7 @@ export function DashboardPage() {
 
   const { projects = [], loading, error, refetch } = useProjects();
   const { tasks, statusFilter, setStatusFilter, reloadTasks, changeTaskStatus } = useTasks(selectedProjectId);
-  const projectForm = useProjectForm();
+  const projectForm = useProjectForm({ onSuccess: refetch });
 
   const handleRefresh = () => {
     refetch();
