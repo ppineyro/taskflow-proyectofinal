@@ -6,9 +6,11 @@ interface Props {
   tasks: Task[];
   filter: string;
   onFilterChange: (status: string) => void;
+  onStatusChange?: (taskId: number, newStatus: string) => void;
+  onDeleteTask?: (taskId: number) => void;
 }
 
-export function TaskList({ tasks, filter, onFilterChange }: Props) {
+export function TaskList({ tasks, filter, onFilterChange, onStatusChange, onDeleteTask }: Props) {
   return (
     <Paper variant="outlined" sx={{ p: 2 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -29,7 +31,14 @@ export function TaskList({ tasks, filter, onFilterChange }: Props) {
           No hay tareas en este estado.
         </Typography>
       ) : (
-        tasks.map((task) => <TaskCardDetail key={task.id} task={task} />)
+        tasks.map((task) => (
+          <TaskCardDetail
+            key={task.id}
+            task={task}
+            onStatusChange={onStatusChange}
+            onDelete={onDeleteTask}
+          />
+        ))
       )}
     </Paper>
   );

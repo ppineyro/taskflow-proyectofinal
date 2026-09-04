@@ -2,10 +2,13 @@ import { Box, Button, Typography, Stack } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 export function Navbar() {
   const { logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <Box
@@ -22,10 +25,20 @@ export function Navbar() {
         TaskFlow App
       </Typography>
       <Stack direction="row" spacing={2} alignItems="center">
-        <Button startIcon={<DashboardIcon />} variant="contained" size="small">
+        <Button
+          startIcon={<DashboardIcon />}
+          variant={location.pathname === '/dashboard' ? 'contained' : 'outlined'}
+          size="small"
+          onClick={() => navigate('/dashboard')}
+        >
           DASHBOARD
         </Button>
-        <Button startIcon={<AssignmentIcon />} variant="text" size="small">
+        <Button
+          startIcon={<AssignmentIcon />}
+          variant={location.pathname === '/tasks' ? 'contained' : 'outlined'}
+          size="small"
+          onClick={() => navigate('/tasks')}
+        >
           TAREAS (/TASKS)
         </Button>
         <Button startIcon={<LogoutIcon />} color="error" size="small" onClick={logout}>
