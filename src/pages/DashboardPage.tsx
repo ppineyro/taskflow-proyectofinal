@@ -30,7 +30,7 @@ export function DashboardPage() {
   const [editDescription, setEditDescription] = useState('');
 
   const { projects, loading, error } = useProjects();
-  const { tasks, filteredTasks, statusFilter, setStatusFilter, reloadTasks } = useTasks(selectedProjectId);
+  const { tasks, statusFilter, setStatusFilter, reloadTasks } = useTasks(selectedProjectId);
   const projectForm = useProjectForm();
 
   const handleRefresh = () => {
@@ -71,6 +71,25 @@ export function DashboardPage() {
     setEditingProject(null);
     reloadTasks();
   };
+
+  //filtroooo
+  const customFilteredTasks = tasks.filter((task) => {
+    if (!statusFilter || statusFilter === 'TODAS' || statusFilter === 'ALL') {
+      return true;
+    }
+    const currentStatus = String(task.status || '').toUpperCase();
+
+    if (statusFilter === 'POR_HACER' || statusFilter === 'TODO') {
+      return currentStatus === 'POR_HACER' || currentStatus === 'TODO' || currentStatus === 'PENDIENTE';
+    }
+    if (statusFilter === 'EN_PROGRESO' || statusFilter === 'IN_PROGRESS') {
+      return currentStatus === 'EN_PROGRESO' || currentStatus === 'IN_PROGRESS';
+    }
+    if (statusFilter === 'COMPLETADA' || statusFilter === 'DONE') {
+      return currentStatus === 'COMPLETADA' || currentStatus === 'DONE';
+    }
+    return true;
+  });
 
   const inProgress = tasks.filter((t) => t.status === 'EN_PROGRESO' || t.status === 'IN_PROGRESS').length;
   const completed = tasks.filter((t) => t.status === 'COMPLETADA' || t.status === 'DONE').length;
@@ -116,14 +135,13 @@ export function DashboardPage() {
 
         <Grid size={{ xs: 12, md: 7 }}>
           <TaskList
-            tasks={filteredTasks}
+            tasks={customFilteredTasks}
             filter={statusFilter}
             onFilterChange={setStatusFilter}
           />
         </Grid>
       </Grid>
 
-      {/* Modal para Editar Proyecto (PUT) */}
       <Dialog open={Boolean(editingProject)} onClose={() => setEditingProject(null)} fullWidth maxWidth="xs">
         <DialogTitle>Editar Proyecto</DialogTitle>
         <DialogContent>

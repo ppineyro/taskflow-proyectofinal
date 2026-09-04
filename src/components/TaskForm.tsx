@@ -4,7 +4,13 @@ import type { Project } from '../types';
 
 interface TaskFormProps {
   projects: Project[];
-  onSubmit: (taskData: { title: string; description: string; priority: string; projectId: number }) => Promise<void>;
+  onSubmit: (taskData: { 
+    title: string; 
+    description: string; 
+    priority: string; 
+    projectId: number; 
+    dueDate: string; 
+  }) => Promise<void>;
 }
 
 export function TaskForm({ projects, onSubmit }: TaskFormProps) {
@@ -12,6 +18,7 @@ export function TaskForm({ projects, onSubmit }: TaskFormProps) {
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState('MEDIA');
   const [projectId, setProjectId] = useState<number | ''>('');
+  const [dueDate, setDueDate] = useState(new Date().toISOString().split('T')[0]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,9 +31,16 @@ export function TaskForm({ projects, onSubmit }: TaskFormProps) {
     try {
       setSubmitting(true);
       setError(null);
-      await onSubmit({ title, description, priority, projectId: Number(projectId) });
+      await onSubmit({ 
+        title, 
+        description, 
+        priority, 
+        projectId: Number(projectId), 
+        dueDate 
+      });
       setTitle('');
       setDescription('');
+      setDueDate(new Date().toISOString().split('T')[0]);
     } catch (err: any) {
       setError(err.message || 'Error al crear la tarea');
     } finally {
@@ -89,6 +103,16 @@ export function TaskForm({ projects, onSubmit }: TaskFormProps) {
             <MenuItem value="ALTA">Alta</MenuItem>
           </Select>
         </FormControl>
+
+        <TextField
+          label="Fecha de entrega"
+          type="date"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+          fullWidth
+          size="small"
+          InputLabelProps={{ shrink: true }}
+        />
 
         <Button type="submit" variant="contained" disabled={submitting || !title || !projectId}>
           {submitting ? 'Guardando…' : 'Crear Tarea'}
