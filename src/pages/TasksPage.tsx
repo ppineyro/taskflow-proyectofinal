@@ -22,10 +22,10 @@ export function TasksPage() {
 
     const priorityMap: Record<string, string> = {
       'Baja': 'LOW',
-      'Media': 'MEDIUM',
+      'Media': 'MED',
       'Alta': 'HIGH',
       'BAJA': 'LOW',
-      'MEDIA': 'MEDIUM',
+      'MEDIA': 'MED',
       'ALTA': 'HIGH',
     };
 
