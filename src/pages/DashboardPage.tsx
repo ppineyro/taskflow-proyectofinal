@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  Alert,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -20,7 +21,7 @@ import { TaskList } from '../components/TaskList';
 import { useProjects } from '../hooks/useProjects';
 import { useTasks } from '../hooks/useTasks';
 import { useProjectForm } from '../hooks/useProjectForm';
-import * as projectService from '../services/projectService';
+import { deleteProject, updateProject } from '../services/projectService';
 import type { Project } from '../types';
 
 export function DashboardPage() {
@@ -28,27 +29,28 @@ export function DashboardPage() {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
+  const [actionError, setActionError] = useState<string | null>(null);
 
-  const { projects, loading, error } = useProjects();
-  const { tasks, statusFilter, setStatusFilter, reloadTasks } = useTasks(selectedProjectId);
+  const { projects = [], loading, error, refetch } = useProjects();
+  const { tasks, statusFilter, setStatusFilter, reloadTasks, changeTaskStatus } = useTasks(selectedProjectId);
   const projectForm = useProjectForm();
 
   const handleRefresh = () => {
+    refetch();
     reloadTasks();
   };
 
   const handleDeleteProject = async (id: number) => {
-    const service = projectService as any;
-    if (service.deleteProject) {
-      await service.deleteProject(id);
-    } else if (service.delete) {
-      await service.delete(id);
-    } else if (service.removeProject) {
-      await service.removeProject(id);
+    try {
+      setActionError(null);
+      await deleteProject(id);
+      if (selectedProjectId === id) setSelectedProjectId(null);
+      refetch();
+      reloadTasks();
+    } catch (err) {
+      console.error('Error al eliminar proyecto:', err);
+      setActionError('No se pudo eliminar el proyecto.');
     }
-
-    if (selectedProjectId === id) setSelectedProjectId(null);
-    reloadTasks();
   };
 
   const handleOpenEdit = (project: Project) => {
@@ -59,17 +61,16 @@ export function DashboardPage() {
 
   const handleSaveEdit = async () => {
     if (!editingProject) return;
-    const service = projectService as any;
-    const payload = { name: editName, description: editDescription };
-
-    if (service.updateProject) {
-      await service.updateProject(editingProject.id, payload);
-    } else if (service.update) {
-      await service.update(editingProject.id, payload);
+    try {
+      setActionError(null);
+      await updateProject(editingProject.id, { name: editName, description: editDescription });
+      setEditingProject(null);
+      refetch();
+      reloadTasks();
+    } catch (err) {
+      console.error('Error al editar proyecto:', err);
+      setActionError('No se pudo actualizar el proyecto.');
     }
-
-    setEditingProject(null);
-    reloadTasks();
   };
 
   //filtroooo
@@ -101,6 +102,12 @@ export function DashboardPage() {
       <Typography variant="h4" align="center" sx={{ fontWeight: 'bold', my: 3 }}>
         Tablero de Proyectos y Tareas
       </Typography>
+
+      {actionError && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setActionError(null)}>
+          {actionError}
+        </Alert>
+      )}
 
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
         <Button startIcon={<RefreshIcon />} variant="outlined" size="small" onClick={handleRefresh}>
@@ -138,6 +145,7 @@ export function DashboardPage() {
             tasks={customFilteredTasks}
             filter={statusFilter}
             onFilterChange={setStatusFilter}
+            onStatusChange={changeTaskStatus}
           />
         </Grid>
       </Grid>

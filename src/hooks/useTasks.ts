@@ -30,6 +30,15 @@ export function useTasks(projectId?: number | null) {
     fetchTasks();
   }, [fetchTasks]);
 
+  const changeTaskStatus = async (taskId: number, newStatus: string) => {
+    try {
+      await taskService.updateTaskStatus(taskId, newStatus);
+      await fetchTasks();
+    } catch (err: any) {
+      console.error('Error al actualizar estado de la tarea:', err);
+    }
+  };
+
   const filteredTasks = tasks.filter((task) => {
     if (statusFilter === 'TODAS') return true;
     return task.status === statusFilter;
@@ -43,5 +52,6 @@ export function useTasks(projectId?: number | null) {
     statusFilter,
     setStatusFilter,
     reloadTasks: fetchTasks,
+    changeTaskStatus,
   };
 }

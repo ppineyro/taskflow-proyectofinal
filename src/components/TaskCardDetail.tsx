@@ -52,9 +52,9 @@ export function TaskCardDetail({ task, onStatusChange, onDelete }: Props) {
                 onChange={(e) => onStatusChange(task.id, e.target.value)}
                 sx={{ height: 30, fontSize: '0.8rem' }}
               >
-                <MenuItem value="POR_HACER">Por hacer</MenuItem>
-                <MenuItem value="EN_PROGRESO">En progreso</MenuItem>
-                <MenuItem value="COMPLETADA">Completada</MenuItem>
+                <MenuItem value="TODO">Por hacer</MenuItem>
+                <MenuItem value="IN_PROGRESS">En progreso</MenuItem>
+                <MenuItem value="DONE">Completada</MenuItem>
               </Select>
             </FormControl>
           )}

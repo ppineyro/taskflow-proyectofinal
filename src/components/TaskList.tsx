@@ -16,12 +16,17 @@ export function TaskList({ tasks, filter, onFilterChange, onStatusChange, onDele
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h6">Tareas ({tasks.length})</Typography>
         <FormControl size="small" sx={{ minWidth: 130 }}>
-          <InputLabel>Estado</InputLabel>
-          <Select value={filter} label="Estado" onChange={(e) => onFilterChange(e.target.value)}>
+          <InputLabel id="status-filter-label">Estado</InputLabel>
+          <Select
+            labelId="status-filter-label"
+            value={filter || 'TODAS'}
+            label="Estado"
+            onChange={(e) => onFilterChange(e.target.value)}
+          >
             <MenuItem value="TODAS">Todas</MenuItem>
-            <MenuItem value="POR_HACER">Por hacer</MenuItem>
-            <MenuItem value="EN_PROGRESO">En progreso</MenuItem>
-            <MenuItem value="COMPLETADA">Completada</MenuItem>
+            <MenuItem value="TODO">Por hacer</MenuItem>
+            <MenuItem value="IN_PROGRESS">En progreso</MenuItem>
+            <MenuItem value="DONE">Completada</MenuItem>
           </Select>
         </FormControl>
       </Box>
