@@ -69,7 +69,7 @@ export function TasksPage() {
     reloadTasks();
   };
 
-  // Normalización del filtrado para emparejar enums de la API con los valores del select
+  //norm filtrado
   const customFilteredTasks = tasks.filter((task) => {
     if (!statusFilter || statusFilter === 'TODAS' || statusFilter === 'ALL') {
       return true;
