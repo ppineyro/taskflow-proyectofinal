@@ -22,4 +22,7 @@ export const taskService = {
     const response = await httpClient.patch(`/tasks/${taskId}/status`, { status });
     return response.data;
   },
+  deleteTask: async (taskId: number | string): Promise<void> => {
+    await httpClient.delete(`/tasks/${taskId}`);
+  },
 };

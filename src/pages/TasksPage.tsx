@@ -18,8 +18,6 @@ export function TasksPage() {
     projectId: number;
     dueDate: string;
   }) => {
-    const service = taskService as any;
-
     const priorityMap: Record<string, string> = {
       'Baja': 'LOW',
       'Media': 'MED',
@@ -36,37 +34,18 @@ export function TasksPage() {
       dueDate: taskData.dueDate,
     };
 
-    if (service.createTask) {
-      await service.createTask(taskData.projectId, payload);
-    } else if (service.create) {
-      await service.create(taskData.projectId, payload);
-    }
-
-    reloadTasks();
+    await taskService.createTask(taskData.projectId, payload as any);
+    await reloadTasks();
   };
 
   const handleStatusChange = async (taskId: number, newStatus: string) => {
-    const service = taskService as any;
-    if (service.updateTaskStatus) {
-      await service.updateTaskStatus(taskId, newStatus);
-    } else if (service.updateStatus) {
-      await service.updateStatus(taskId, newStatus);
-    } else if (service.updateTask) {
-      await service.updateTask(taskId, { status: newStatus });
-    }
-    reloadTasks();
+    await taskService.updateTaskStatus(taskId, newStatus);
+    await reloadTasks();
   };
 
   const handleDeleteTask = async (taskId: number) => {
-    const service = taskService as any;
-    if (service.deleteTask) {
-      await service.deleteTask(taskId);
-    } else if (service.delete) {
-      await service.delete(taskId);
-    } else if (service.removeTask) {
-      await service.removeTask(taskId);
-    }
-    reloadTasks();
+    await taskService.deleteTask(taskId);
+    await reloadTasks();
   };
 
   //norm filtrado
